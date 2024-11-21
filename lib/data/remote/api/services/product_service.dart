@@ -1,8 +1,22 @@
-import '../dto/Product.dart';
+import 'package:flutter_app/data/remote/dto/product_dto.dart';
+import 'package:flutter_app/domain/repositories/product_repository.dart';
+
 import '../constants.dart';
 import 'package:dio/dio.dart';
 
-Future<ApiResponse<List<Product>>> fetchProducts(Dio dio) async {
+class ProductService implements ProductRepository {
+  @override
+  Future<ApiResponse<ProductDto>> fetchProduct(Dio dio, String id) async {
+    return _fetchProduct(dio, id);
+  }
+
+  @override
+  Future<ApiResponse<List<ProductDto>>> fetchProducts(Dio dio) async {
+    return _fetchProducts(dio);
+  }
+}
+
+Future<ApiResponse<List<ProductDto>>> _fetchProducts(Dio dio) async {
   try {
     final response = await dio.get('/products');
 
@@ -15,8 +29,8 @@ Future<ApiResponse<List<Product>>> fetchProducts(Dio dio) async {
         return ApiResponse(success: false, message: 'No products available');
       }
 
-      List<Product> products = productJson.map((product) {
-        return Product.fromJson(product);
+      List<ProductDto> products = productJson.map((product) {
+        return ProductDto.fromJson(product);
       }).toList();
 
       return ApiResponse(success: true, message: message, data: products);
@@ -28,7 +42,7 @@ Future<ApiResponse<List<Product>>> fetchProducts(Dio dio) async {
   }
 }
 
-Future<ApiResponse<Product>> fetchProduct(Dio dio, String id) async {
+Future<ApiResponse<ProductDto>> _fetchProduct(Dio dio, String id) async {
   try {
     final response = await dio.get('/products/$id');
 
@@ -37,7 +51,7 @@ Future<ApiResponse<Product>> fetchProduct(Dio dio, String id) async {
     final Map<String, dynamic> productJson = response.data['data'] ?? {};
 
     if (status == true) {
-      Product product = Product.fromJson(productJson);
+      ProductDto product = ProductDto.fromJson(productJson);
 
       return ApiResponse(success: true, message: message, data: product);
     } else {

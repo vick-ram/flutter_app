@@ -16,7 +16,14 @@ class Button extends StatelessWidget {
     return ElevatedButton(
       onPressed: loading ? null : onPressed,
       style: raisedButtonStyle,
-      child: loading ? const CircularProgressIndicator() : Text(label),
+      child: loading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ))
+          : Text(label),
     );
   }
 }

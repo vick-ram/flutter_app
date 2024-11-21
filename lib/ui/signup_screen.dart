@@ -48,7 +48,10 @@ class _SignupScreenState extends State<Signupscreen> {
                 ),
                 Input(controller: firstNameController, hint: 'John'),
                 Input(controller: lastNameController, hint: 'Doe'),
-                Input(controller: emailController, hint: 'john@gmail.com'),
+                Input(
+                    keybordType: TextInputType.emailAddress,
+                    controller: emailController,
+                    hint: 'john@gmail.com'),
                 Input(
                   controller: passwordController,
                   hint: '*********',

@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/api/constants.dart';
-import 'package:flutter_app/api/services/userService.dart';
+import 'package:flutter_app/data/remote/api/services/user_service.dart';
+import 'package:flutter_app/di/service_locator.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/Input.dart';
 import '../widgets/Button.dart';
@@ -23,9 +26,10 @@ class _SigninScreenState extends State<Signinscreen> {
     _checkLoginStatus();
   }
 
-  void _checkLoginStatus() async {
-    final prefs = await initializePreferences();
+  Future<void> _checkLoginStatus() async {
+    final prefs = await GetIt.I.getAsync<SharedPreferences>();
     final token = prefs.getString('token');
+    if (!mounted) return;
     if (token != null) {
       Navigator.pushReplacementNamed(context, '/home');
     }
@@ -38,11 +42,13 @@ class _SigninScreenState extends State<Signinscreen> {
     super.dispose();
   }
 
-  void _signIn() async {
+  Future<void> _signIn() async {
+    setState(() {
+      isLoading = true;
+    });
+
     final email = emailController.text;
     final password = passwordController.text;
-
-    final prefs = await initializePreferences();
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -50,23 +56,36 @@ class _SigninScreenState extends State<Signinscreen> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    try {
+      final dio = getIt<Dio>();
+      final prefs = await GetIt.I.getAsync<SharedPreferences>();
+      final login = getIt<UserService>().login;
 
-    final res = await login(email, password, prefs);
+      final res = await login(
+        dio,
+        prefs,
+        email,
+        password,
+      );
 
-    setState(() {
-      isLoading = false;
-    });
+      if (!mounted) return;
 
-    if (res.success) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(res.message)));
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(res.message)));
+      if (res.success) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(res.message)));
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login failed: ${res.message}')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
 
     // clear the input fields
@@ -96,7 +115,10 @@ class _SigninScreenState extends State<Signinscreen> {
               'Sign In',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            Input(controller: emailController, hint: 'john@gmail.com'),
+            Input(
+                keybordType: TextInputType.emailAddress,
+                controller: emailController,
+                hint: 'john@gmail.com'),
             Input(
               controller: passwordController,
               hint: 'Your password',
