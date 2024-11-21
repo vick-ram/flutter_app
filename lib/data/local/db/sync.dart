@@ -58,7 +58,6 @@ class Sync {
       final token = prefs.getString('token');
       final decodedToken = jwtDecode(token);
       final userId = decodedToken['sub'];
-      print('User ID: $userId');
       final user = await database.userDao.getUserById(userId);
       if (user != null) {
         final apiUser = await userService.getUserById(dio, userId);
@@ -76,4 +75,10 @@ class Sync {
       print('Error during sync: $e');
     }
   }
+
+  // Future<void> syncCart() async {
+  //   try {
+  //     final apiCarts = await
+  //   }
+  // }
 }

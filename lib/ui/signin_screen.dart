@@ -5,8 +5,8 @@ import 'package:flutter_app/di/service_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../widgets/Input.dart';
-import '../widgets/Button.dart';
+import '../widgets/input.dart';
+import '../widgets/button.dart';
 
 class Signinscreen extends StatefulWidget {
   const Signinscreen({super.key});
@@ -19,6 +19,7 @@ class _SigninScreenState extends State<Signinscreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+  bool isCheckingLogin = true;
 
   @override
   void initState() {
@@ -29,9 +30,12 @@ class _SigninScreenState extends State<Signinscreen> {
   Future<void> _checkLoginStatus() async {
     final prefs = await GetIt.I.getAsync<SharedPreferences>();
     final token = prefs.getString('token');
-    if (!mounted) return;
-    if (token != null) {
+    if (token != null && mounted) {
       Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      setState(() {
+        isCheckingLogin = false;
+      });
     }
   }
 
@@ -95,6 +99,11 @@ class _SigninScreenState extends State<Signinscreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isCheckingLogin) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return SafeArea(
         child: Scaffold(
       body: SingleChildScrollView(

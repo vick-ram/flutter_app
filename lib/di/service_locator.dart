@@ -1,4 +1,5 @@
 import 'package:flutter_app/data/local/db/database_factory.dart';
+import 'package:flutter_app/data/remote/api/services/cart_service.dart';
 import 'package:flutter_app/data/remote/api/services/product_service.dart';
 import 'package:flutter_app/data/remote/api/services/user_service.dart';
 import 'package:get_it/get_it.dart';
@@ -25,6 +26,7 @@ void setupDependencies() async {
   });
   getIt.registerSingleton<ProductService>(ProductService());
   getIt.registerSingleton<UserService>(UserService());
+  getIt.registerSingleton<CartService>(CartService());
   getIt.registerLazySingletonAsync<AppDatabase>(() async {
     final database = await DatabaseFactory().getDatabase();
     return database;

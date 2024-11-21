@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/Input.dart';
-import '../widgets/Button.dart';
+import '../widgets/input.dart';
+import '../widgets/button.dart';
 
 class Signupscreen extends StatefulWidget {
   const Signupscreen({super.key});

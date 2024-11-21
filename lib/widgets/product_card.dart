@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/remote/api/constants.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -35,7 +36,7 @@ class ProductCard extends StatelessWidget {
                   height: 100,
                   width: double.infinity,
                   child: Image.network(
-                    'http://192.168.1.55:8080/$image',
+                    '$baseUrl/$image',
                     fit: BoxFit.cover,
                   ),
                 ),

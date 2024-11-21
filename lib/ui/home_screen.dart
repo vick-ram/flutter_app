@@ -4,7 +4,7 @@ import 'package:flutter_app/data/local/db/database_factory.dart';
 import 'package:flutter_app/data/local/db/sync.dart';
 import 'package:flutter_app/data/local/entities/product_entity.dart';
 import 'package:flutter_app/di/service_locator.dart';
-import '../widgets/ProductCard.dart';
+import '../widgets/product_card.dart';
 import '../domain/models/Product.dart';
 
 class Homescreen extends StatefulWidget {
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<Homescreen> {
                             price: product.price.toString(),
                           );
                         },
-                        childCount: products!.length,
+                        childCount: products.length,
                       ),
                     )
                   ],
